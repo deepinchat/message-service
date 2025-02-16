@@ -2,12 +2,12 @@
 
 namespace DeepIn.Messaging.API;
 
-public class MessagingDbContext
+public class MessagingContext
 {
     private readonly MongoClient _mongoClient;
     private readonly string _dbName;
     private IMongoDatabase _database;
-    public MessagingDbContext(MongoClient mongoClient, string dbName)
+    public MessagingContext(MongoClient mongoClient, string dbName)
     {
         _mongoClient = mongoClient;
         _dbName = dbName;

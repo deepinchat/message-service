@@ -8,7 +8,7 @@ public class MessageDto : MessageRequest
     public string From { get; set; }
     public long CreatedAt { get; set; }
     public long ModifiedAt { get; set; }
-    public MessageDto() { }
+    public long Sequence { get; set; }
     public MessageDto(Message message)
     {
         this.Id = message.Id.ToString();
@@ -18,5 +18,6 @@ public class MessageDto : MessageRequest
         this.Content = message.Content;
         this.ChatId = message.ChatId;
         this.ReplyTo = message.ReplyTo;
+        this.Sequence = message.Sequence;
     }
 }

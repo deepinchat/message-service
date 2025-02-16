@@ -13,6 +13,7 @@ public class Message : IDocument
     public string ReplyTo { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsRead { get; set; }
-    public long CreatedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public long CreatedAt { get; set; }
     public long ModifiedAt { get; set; } 
+    public long Sequence { get; set; }
 }

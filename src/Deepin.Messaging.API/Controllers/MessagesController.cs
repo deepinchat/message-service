@@ -29,12 +29,23 @@ public class MessagesController : ControllerBase
             return NotFound();
         return Ok(result);
     }
-    //TODO Need to check chat permission
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] MessageQuery query)
     {
         var list = await _messageService.GetMessages(query.Offset, query.Limit, query.ChatId, query.From, query.Keywords);
         return Ok(list);
+    }
+    [HttpGet("last/{chatId}")]
+    public async Task<IActionResult> GetLastMessage(string chatId)
+    {
+        var result = await _messageService.GetLastMessage(chatId);
+        return Ok(result);
+    }
+    [HttpGet("batch")]
+    public async Task<IActionResult> GetMessages([FromQuery] string[] ids)
+    {
+        var result = await _messageService.GetMessages(ids);
+        return Ok(result);
     }
 
     [HttpPost]
@@ -43,4 +54,5 @@ public class MessagesController : ControllerBase
         var result = await _messageService.InsertAsync(request, _userContext.UserId);
         return Ok(new MessageDto(result));
     }
+
 }

@@ -8,8 +8,8 @@ namespace DeepIn.Messaging.API.Infrastructure.Repositories;
 public class MongoRepository<TDocument> : IMongoRepository<TDocument> where TDocument : class, IDocument
 {
     private IMongoCollection<TDocument> _collection;
-    private readonly MessagingDbContext _dbContext;
-    public MongoRepository(MessagingDbContext dbContext)
+    private readonly MessagingContext _dbContext;
+    public MongoRepository(MessagingContext dbContext)
     {
         _dbContext = dbContext;
     }
