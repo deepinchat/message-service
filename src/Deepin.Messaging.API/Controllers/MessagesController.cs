@@ -35,7 +35,7 @@ public class MessagesController : ControllerBase
         var list = await _messageService.GetMessages(query.Offset, query.Limit, query.ChatId, query.From, query.Keywords);
         return Ok(list);
     }
-    [HttpGet("last/{chatId}")]
+    [HttpGet("last")]
     public async Task<IActionResult> GetLastMessage(string chatId)
     {
         var result = await _messageService.GetLastMessage(chatId);
