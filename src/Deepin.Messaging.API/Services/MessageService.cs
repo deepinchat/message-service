@@ -1,5 +1,5 @@
-﻿using Deepin.Application.Pagination;
-using Deepin.EventBus.Events;
+﻿using Deepin.EventBus.Events;
+using Deepin.Infrastructure.Pagination;
 using Deepin.Messaging.API.Domain;
 using DeepIn.Messaging.API.Domain;
 using DeepIn.Messaging.API.Models.Messages;
@@ -53,7 +53,7 @@ public class MessageService(
         return new MessageDto(message);
     }
 
-    public IFindFluent<Message, Message> Query(string chatId = null, string from = null, string keywords = null)
+    public IFindFluent<Message, Message> Query(string chatId = null, string from = null, string keywords = null, MessageQueryDirection direction = MessageQueryDirection.Backward, long anchorSqeuence = 0)
     {
         var filterBuilder = Builders<Message>.Filter;
         var filters = new List<FilterDefinition<Message>>();
@@ -69,18 +69,36 @@ public class MessageService(
         {
             filters.Add(filterBuilder.Regex(d => d.Content, new BsonRegularExpression(keywords, "i")));
         }
+        if (anchorSqeuence > 0)
+        {
+            if (direction == MessageQueryDirection.Backward)
+            {
+                filters.Add(filterBuilder.Lte(d => d.Sequence, anchorSqeuence));
+            }
+            else
+            {
+                filters.Add(filterBuilder.Gte(d => d.Sequence, anchorSqeuence));
+            }
+        }
         var filter = filterBuilder.And(filters);
-
         var query = _messageRepository.Collection.Find(filter);
         return query;
     }
-    public async Task<IPagination<MessageDto>> GetMessages(int offset = 0, int limit = 20, string chatId = null, string from = null, string keywords = null)
+    public async Task<IPagination<MessageDto>> GetMessages(int offset = 0, int limit = 20, string chatId = null, string from = null, string keywords = null, MessageQueryDirection direction = MessageQueryDirection.Backward, long anchorSqeuence = 0)
     {
-        var query = Query(chatId, from, keywords);
+        var query = Query(chatId, from, keywords, direction, anchorSqeuence);
         var totalCount = await query.CountDocumentsAsync();
-        var documents = await query.SortByDescending(s => s.CreatedAt).Skip(offset).Limit(limit).ToListAsync();
-
-        return new Pagination<MessageDto>(documents.Select(e => new MessageDto(e)), offset, limit, (int)totalCount);
+        List<Message> messages = [];
+        if (direction == MessageQueryDirection.Backward)
+        {
+            messages = await query.SortByDescending(s => s.Sequence).Skip(offset).Limit(limit).ToListAsync();
+        }
+        else
+        {
+            messages = await query.SortBy(s => s.Sequence).Skip(offset).Limit(limit).ToListAsync();
+            messages.Reverse();
+        }
+        return new Pagination<MessageDto>(messages.Select(e => new MessageDto(e)), offset, limit, (int)totalCount);
     }
 
     public async Task<MessageDto> GetLastMessage(string chatId)

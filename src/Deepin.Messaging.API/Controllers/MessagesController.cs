@@ -1,8 +1,8 @@
 ﻿using Deepin.Domain;
 using DeepIn.Messaging.API.Models.Messages;
-using DeepIn.Messaging.API.Services; 
+using DeepIn.Messaging.API.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 
 namespace DeepIn.Messaging.API.Controllers;
 
@@ -32,7 +32,14 @@ public class MessagesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] MessageQuery query)
     {
-        var list = await _messageService.GetMessages(query.Offset, query.Limit, query.ChatId, query.From, query.Keywords);
+        var list = await _messageService.GetMessages(
+            query.Offset,
+            query.Limit,
+            query.ChatId,
+            query.From,
+            query.Keywords,
+            query.Direction,
+            query.AnchorSequence);
         return Ok(list);
     }
     [HttpGet("last")]
