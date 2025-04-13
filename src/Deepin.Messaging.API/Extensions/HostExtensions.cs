@@ -38,7 +38,7 @@ public static class HostExtensions
     private static IServiceCollection AddMessagingContext(this IServiceCollection services, string connectionString)
     {
         services.AddSingleton(s => new MongoClient(connectionString));
-        services.AddSingleton(s => new MessagingContext(s.GetRequiredService<MongoClient>(), "messages"));
+        services.AddSingleton(s => new MessagingContext(s.GetRequiredService<MongoClient>(), "messages-dev"));
         services.AddSingleton(typeof(IMongoRepository<>), typeof(MongoRepository<>));
         return services;
     }

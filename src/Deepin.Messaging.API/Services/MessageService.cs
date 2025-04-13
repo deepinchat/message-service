@@ -35,11 +35,14 @@ public class MessageService(
         var message = await _messageRepository.InsertAsync(new Message()
         {
             ChatId = request.ChatId,
-            Content = request.Content,
             CreatedAt = createdAt.HasValue ? createdAt.Value.ToUnixTimeMilliseconds() : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            From = userId,
-            ReplyTo = request.ReplyTo,
-            Sequence = sequence
+            UserId = userId,
+            Sequence = sequence,
+            Attachments = request.Attachments,
+            Mentions = request.Mentions,
+             ParentId = request.ParentId,
+            ReplyToId = request.ReplyToId,
+            Type = request.Type,
         });
         await _bus.Publish(new SendChatMessageIntegrationEvent(request.ChatId.ToString(), message.Id.ToString()));
         return message;
@@ -53,7 +56,7 @@ public class MessageService(
         return new MessageDto(message);
     }
 
-    public IFindFluent<Message, Message> Query(string chatId = null, string from = null, string keywords = null, MessageQueryDirection direction = MessageQueryDirection.Backward, long anchorSqeuence = 0)
+    public IFindFluent<Message, Message> Query(string chatId = null, string userId = null, string keywords = null, MessageQueryDirection direction = MessageQueryDirection.Backward, long anchorSqeuence = 0)
     {
         var filterBuilder = Builders<Message>.Filter;
         var filters = new List<FilterDefinition<Message>>();
@@ -61,13 +64,13 @@ public class MessageService(
         {
             filters.Add(filterBuilder.Eq(d => d.ChatId, chatId));
         }
-        if (!string.IsNullOrEmpty(from))
+        if (!string.IsNullOrEmpty(userId))
         {
-            filters.Add(filterBuilder.Eq(d => d.From, from));
+            filters.Add(filterBuilder.Eq(d => d.UserId, userId));
         }
         if (!string.IsNullOrEmpty(keywords))
         {
-            filters.Add(filterBuilder.Regex(d => d.Content, new BsonRegularExpression(keywords, "i")));
+            filters.Add(filterBuilder.Regex(d => d.Text, new BsonRegularExpression(keywords, "i")));
         }
         if (anchorSqeuence > 0)
         {

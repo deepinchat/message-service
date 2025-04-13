@@ -6,7 +6,7 @@ public class MessageQuery : PageQuery
 {
     public string ChatId { get; set; }
     public string Keywords { get; set; }
-    public string From { get; set; }
+    public string UserId { get; set; }
     public long AnchorSequence { get; set; }
     public MessageQueryDirection Direction { get; set; }
 }

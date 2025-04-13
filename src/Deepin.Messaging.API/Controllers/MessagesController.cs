@@ -36,7 +36,7 @@ public class MessagesController : ControllerBase
             query.Offset,
             query.Limit,
             query.ChatId,
-            query.From,
+            query.UserId,
             query.Keywords,
             query.Direction,
             query.AnchorSequence);
@@ -54,12 +54,10 @@ public class MessagesController : ControllerBase
         var result = await _messageService.GetMessages(ids);
         return Ok(result);
     }
-
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] MessageRequest request)
     {
         var result = await _messageService.InsertAsync(request, _userContext.UserId);
         return Ok(new MessageDto(result));
     }
-
 }
