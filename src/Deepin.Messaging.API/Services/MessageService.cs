@@ -40,9 +40,10 @@ public class MessageService(
             Sequence = sequence,
             Attachments = request.Attachments,
             Mentions = request.Mentions,
-             ParentId = request.ParentId,
+            ParentId = request.ParentId,
             ReplyToId = request.ReplyToId,
             Type = request.Type,
+            Text = request.Text
         });
         await _bus.Publish(new SendChatMessageIntegrationEvent(request.ChatId.ToString(), message.Id.ToString()));
         return message;
